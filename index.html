@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>🌿橋本理央の日記帳</title>
+  <title>🌿理央の日常</title>
   <style>
     body {
       margin: 0;
@@ -70,7 +70,7 @@
 <body>
 
   <header>
-    <h1>🌿橋本理央の日記帳</h1>
+    <h1>🌿理央の日記</h1>
     <p style="margin-top: 10px;">思ったこと、感じたことを自由に残そう。</p>
   </header>
 
@@ -89,3 +89,13 @@
   <footer>© 2025 橋本理央の日記帳</footer>
 </body>
 </html>
+
+<script>
+  const correctPassword = "rio38";
+
+  let userPassword = prompt("🔐 パスワードを入力してください：");
+
+  if (userPassword !== correctPassword) {
+    document.body.innerHTML = "<h2 style='text-align:center; margin-top:50px;'>⛔ パスワードが間違っています</h2>";
+  }
+</script>
