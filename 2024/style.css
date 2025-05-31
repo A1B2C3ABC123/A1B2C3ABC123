@@ -1,0 +1,43 @@
+body {
+  font-family: sans-serif;
+  text-align: center;
+  margin: 0;
+  padding: 0;
+  background: #faf8ef;
+}
+
+h1 {
+  margin: 20px 0 10px;
+  font-size: 2rem;
+}
+
+#board {
+  width: 90vmin;
+  height: 90vmin;
+  margin: auto;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 5px;
+}
+
+.tile {
+  width: 100%;
+  padding-top: 100%; /* 正方形にする */
+  position: relative;
+  background: #cdc1b4;
+  border-radius: 5px;
+  font-size: 2rem;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #776e65;
+}
+
+.tile-inner {
+  position: absolute;
+  top: 0; bottom: 0; left: 0; right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
