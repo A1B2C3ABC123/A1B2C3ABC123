@@ -1,8 +1,7 @@
 body {
   font-family: sans-serif;
   padding: 2rem;
-  background: url("images/background.jpg") no-repeat center center fixed;
-  background-size: cover;
+  background: #fff
   color: #000;
   text-shadow: 0 0 5px #ba091e;
 }
