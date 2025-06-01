@@ -3,10 +3,9 @@ body {
   padding: 2rem;
   background: #fff
   color: #000;
-  text-shadow: 0 0 5px #ba091e;
 }
 
 a {
-  color: #3ce892;
+  color: #000;
   text-decoration: underline;
 }
