@@ -12,3 +12,14 @@
   <p>wwww</p>
 </body>
 </html>
+
+
+<script>
+  const correctPassword = "ABC";
+
+  let userPassword = prompt("🔐 パスワードを入力してください(burosuta name)：");
+
+   if (userPassword !== correctPassword) {
+    document.body.innerHTML = "<h2 style='text-align:center; margin-top:50px;'>⛔ パスワードが間違っています</h2>";
+  }
+</script>
