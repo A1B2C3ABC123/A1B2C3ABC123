@@ -30,7 +30,6 @@
   <canvas id="game" width="240" height="400"></canvas>
   <p>← →：移動｜↑：回転｜↓：速く落とす</p>
 
-  <!-- 👇 スマホ用ボタン -->
   <div class="controls">
     <button onclick="playerMove(-1)">←</button>
     <button onclick="playerRotate()">↑</button>
@@ -43,17 +42,40 @@
     const context = canvas.getContext('2d');
     context.scale(20, 20);
 
-    const matrix = [
-      [0, 0, 0],
-      [1, 1, 1],
-      [0, 1, 0],
-    ];
+    const arena = createMatrix(12, 20);
+    const player = {
+      pos: { x: 0, y: 0 },
+      matrix: null,
+    };
+
+    function createMatrix(w, h) {
+      const matrix = [];
+      while (h--) {
+        matrix.push(new Array(w).fill(0));
+      }
+      return matrix;
+    }
+
+    function createPiece(type) {
+      if (type === 'T') {
+        return [
+          [0, 0, 0],
+          [1, 1, 1],
+          [0, 1, 0],
+        ];
+      } else if (type === 'O') {
+        return [
+          [2, 2],
+          [2, 2],
+        ];
+      }
+    }
 
     function drawMatrix(matrix, offset) {
       matrix.forEach((row, y) => {
         row.forEach((value, x) => {
           if (value) {
-            context.fillStyle = '#f6d365';
+            context.fillStyle = value === 1 ? '#f6d365' : '#fda085';
             context.fillRect(x + offset.x, y + offset.y, 1, 1);
           }
         });
@@ -63,6 +85,7 @@
     function draw() {
       context.fillStyle = '#000';
       context.fillRect(0, 0, canvas.width, canvas.height);
+      drawMatrix(arena, { x: 0, y: 0 });
       drawMatrix(player.matrix, player.pos);
     }
 
@@ -80,23 +103,14 @@
       const [m, o] = [player.matrix, player.pos];
       for (let y = 0; y < m.length; ++y) {
         for (let x = 0; x < m[y].length; ++x) {
-          if (
-            m[y][x] &&
-            (arena[y + o.y] && arena[y + o.y][x + o.x]) !== 0
-          ) {
+          if (m[y][x] &&
+            (arena[y + o.y] &&
+             arena[y + o.y][x + o.x]) !== 0) {
             return true;
           }
         }
       }
       return false;
-    }
-
-    function createMatrix(w, h) {
-      const matrix = [];
-      while (h--) {
-        matrix.push(new Array(w).fill(0));
-      }
-      return matrix;
     }
 
     function playerDrop() {
@@ -116,12 +130,6 @@
       }
     }
 
-    function playerReset() {
-      player.matrix = matrix;
-      player.pos.y = 0;
-      player.pos.x = (arena[0].length / 2 | 0) - (matrix[0].length / 2 | 0);
-    }
-
     function playerRotate() {
       const m = player.matrix;
       for (let y = 0; y < m.length; ++y) {
@@ -131,9 +139,21 @@
       }
       m.forEach(row => row.reverse());
       if (collide(arena, player)) {
+        // 回転無効化
         for (let i = 0; i < 3; ++i) {
           m.forEach(row => row.reverse());
         }
+      }
+    }
+
+    function playerReset() {
+      const pieces = 'TO';
+      player.matrix = createPiece(pieces[Math.floor(Math.random() * pieces.length)]);
+      player.pos.y = 0;
+      player.pos.x = (arena[0].length / 2 | 0) - (player.matrix[0].length / 2 | 0);
+      if (collide(arena, player)) {
+        arena.forEach(row => row.fill(0));
+        alert("ゲームオーバー！");
       }
     }
 
@@ -158,12 +178,6 @@
       else if (event.key === 'ArrowDown') playerDrop();
       else if (event.key === 'ArrowUp') playerRotate();
     });
-
-    const arena = createMatrix(12, 20);
-    const player = {
-      pos: { x: 0, y: 0 },
-      matrix: matrix,
-    };
 
     playerReset();
     update();
