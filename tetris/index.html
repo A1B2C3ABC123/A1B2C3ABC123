@@ -3,17 +3,38 @@
 <head>
   <meta charset="UTF-8">
   <title>テトリス</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     body {
       background: #111;
       color: #fff;
       text-align: center;
       font-family: sans-serif;
+      margin: 0;
     }
     canvas {
       border: 2px solid #fff;
       background: #000;
       margin-top: 20px;
+      touch-action: none;
+    }
+    .controls {
+      margin-top: 10px;
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .controls button {
+      font-size: 20px;
+      padding: 10px 20px;
+      border-radius: 10px;
+      border: none;
+      background: #444;
+      color: #fff;
+    }
+    .controls button:active {
+      background: #888;
     }
   </style>
 </head>
@@ -21,75 +42,33 @@
   <h1>🎮 テトリス</h1>
   <p id="score">スコア: 0</p>
   <canvas id="game" width="240" height="400"></canvas>
-  <p>← →：移動｜↑：回転｜↓：速く落とす</p>
+  <div class="controls">
+    <button onclick="playerMove(-1)">← 左</button>
+    <button onclick="playerRotate()">⟳ 回転</button>
+    <button onclick="playerMove(1)">→ 右</button>
+    <button onclick="playerDrop()">↓ 落とす</button>
+  </div>
   <script>
     const canvas = document.getElementById('game');
     const context = canvas.getContext('2d');
     context.scale(20, 20);
 
-    const colors = [
-      null,
-      '#f6d365', // T
-      '#fda085', // O
-      '#6a11cb', // L
-      '#2575fc', // J
-      '#00c9ff', // I
-      '#00f2c3', // S
-      '#ff758c', // Z
-    ];
+    const colors = [null, '#f6d365', '#fda085', '#6a11cb', '#2575fc', '#00c9ff', '#00f2c3', '#ff758c'];
 
     function createMatrix(w, h) {
       const matrix = [];
-      while (h--) {
-        matrix.push(new Array(w).fill(0));
-      }
+      while (h--) matrix.push(new Array(w).fill(0));
       return matrix;
     }
 
     function createPiece(type) {
-      if (type === 'T') {
-        return [
-          [0, 0, 0],
-          [1, 1, 1],
-          [0, 1, 0],
-        ];
-      } else if (type === 'O') {
-        return [
-          [2, 2],
-          [2, 2],
-        ];
-      } else if (type === 'L') {
-        return [
-          [0, 3, 0],
-          [0, 3, 0],
-          [0, 3, 3],
-        ];
-      } else if (type === 'J') {
-        return [
-          [0, 4, 0],
-          [0, 4, 0],
-          [4, 4, 0],
-        ];
-      } else if (type === 'I') {
-        return [
-          [0, 5, 0, 0],
-          [0, 5, 0, 0],
-          [0, 5, 0, 0],
-          [0, 5, 0, 0],
-        ];
-      } else if (type === 'S') {
-        return [
-          [0, 6, 6],
-          [6, 6, 0],
-          [0, 0, 0],
-        ];
-      } else if (type === 'Z') {
-        return [
-          [7, 7, 0],
-          [0, 7, 7],
-          [0, 0, 0],
-        ];
-      }
+      if (type === 'T') return [[0,0,0],[1,1,1],[0,1,0]];
+      if (type === 'O') return [[2,2],[2,2]];
+      if (type === 'L') return [[0,3,0],[0,3,0],[0,3,3]];
+      if (type === 'J') return [[0,4,0],[0,4,0],[4,4,0]];
+      if (type === 'I') return [[0,5,0,0],[0,5,0,0],[0,5,0,0],[0,5,0,0]];
+      if (type === 'S') return [[0,6,6],[6,6,0],[0,0,0]];
+      if (type === 'Z') return [[7,7,0],[0,7,7],[0,0,0]];
     }
 
     function drawMatrix(matrix, offset) {
@@ -106,9 +85,7 @@
     function merge(arena, player) {
       player.matrix.forEach((row, y) => {
         row.forEach((value, x) => {
-          if (value) {
-            arena[y + player.pos.y][x + player.pos.x] = value;
-          }
+          if (value) arena[y + player.pos.y][x + player.pos.x] = value;
         });
       });
     }
@@ -129,11 +106,9 @@
       let rowCount = 1;
       outer: for (let y = arena.length - 1; y >= 0; --y) {
         for (let x = 0; x < arena[y].length; ++x) {
-          if (arena[y][x] === 0) {
-            continue outer;
-          }
+          if (arena[y][x] === 0) continue outer;
         }
-        const row = arena.splice(y, 1)[0];
+        arena.splice(y, 1);
         arena.unshift(new Array(arena[0].length).fill(0));
         y++;
         score += rowCount * 10;
@@ -155,14 +130,12 @@
 
     function playerMove(dir) {
       player.pos.x += dir;
-      if (collide(arena, player)) {
-        player.pos.x -= dir;
-      }
+      if (collide(arena, player)) player.pos.x -= dir;
     }
 
     function playerReset() {
       const pieces = 'ILJOTSZ';
-      player.matrix = createPiece(pieces[Math.floor(Math.random() * pieces.length)]);
+      player.matrix = createPiece(pieces[Math.random() * pieces.length | 0]);
       player.pos.y = 0;
       player.pos.x = (arena[0].length / 2 | 0) - (player.matrix[0].length / 2 | 0);
       if (collide(arena, player)) {
@@ -181,9 +154,7 @@
         }
       }
       m.forEach(row => row.reverse());
-      if (collide(arena, player)) {
-        for (let i = 0; i < 3; ++i) m.forEach(row => row.reverse());
-      }
+      if (collide(arena, player)) m.forEach(row => row.reverse());
     }
 
     function updateScore() {
@@ -224,7 +195,6 @@
       pos: { x: 0, y: 0 },
       matrix: null,
     };
-
     let score = 0;
 
     playerReset();
